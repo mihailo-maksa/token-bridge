@@ -1,3 +1,12 @@
+* {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+body {
+  box-sizing: border-box;
+  margin: 0;
+}
+
 .App {
   text-align: center;
 }
@@ -35,4 +44,17 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+button {
+  cursor: pointer;
+}
+
+.navbar {
+  height: 15vh;
+  width: 100vw;
+  border-bottom: 2px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }

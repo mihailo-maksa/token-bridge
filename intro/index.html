@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Intro to Ethers.js</title>
+    <script
+      src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"
+      type="application/javascript"
+    ></script>
+    <script src="./index.js"></script>
+  </head>
+  <body>
+    <button onclick="connectWallet()">Connect Wallet</button>
+    <p id="address">Your Address:</p>
+    <button onclick="getBalance()">Get Balance</button>
+    <p id="balance">ETH Balance:</p>
+    <button onclick="readContractData()">Read Contract Data</button>
+    <br />
+    <br />
+    <button onclick="sendEtherToAccount()">Send Ether to Account</button>
+    <br />
+    <br />
+    <button onclick="sendTokenToAccount()">Send Token to Account</button>
+    <br />
+    <br />
+    <button onclick="deployContract()">Deploy Contract</button>
+    <br />
+    <br />
+    <button onclick="incrementNumber()">Increment Number</button>
+    <br />
+    <br />
+    <button onclick="emitAnEvent()">Emit an Event</button>
+    <br />
+    <br />
+    <button onclick="listenToEvents()">Listen to Events</button>
+    <br />
+    <br />
+    <button onclick="sendEtherWhenCallingFunction()">
+      Send ETH When Calling Function
+    </button>
+    <br />
+    <br />
+    <button onclick="addStMatic()">Add stMATIC</button>
+  </body>
+</html>
