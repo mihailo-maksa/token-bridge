@@ -17,7 +17,7 @@ const SimpleBridge = () => {
   const [chainId, setChainId] = useState(0)
 
   const [sendAmount, setSendAmount] = useState(0)
-  const [targetChain, setTargetChain] = useState('matic')
+  const [targetChain, setTargetChain] = useState('')
 
   const [ethFaucetAmount, setEthFaucetAmount] = useState(0)
   const [maticFaucetAmount, setMaticFaucetAmount] = useState(0)
@@ -186,16 +186,26 @@ const SimpleBridge = () => {
         const amount = ethers.utils.parseEther(sendAmount)
         let tx
 
-        if (targetChain === 'matic') {
+        if (JSON.parse(localStorage.getItem('currentTargetChain')) === 'eth') {
           tx = await ethUSDCSigner.burn(address, amount)
           localStorage.setItem('claimAmount', JSON.stringify(sendAmount))
           setSendAmount(0)
           await tx.wait()
-        } else if (targetChain === 'eth') {
+          alert(
+            'Transaction was successfully confirmed! Please switch to Polygon to claim your bridged tokens.',
+          )
+          switchToPolygon()
+        } else if (
+          JSON.parse(localStorage.getItem('currentTargetChain')) === 'matic'
+        ) {
           tx = await maticUSDCSigner.burn(address, amount)
           localStorage.setItem('claimAmount', JSON.stringify(sendAmount))
           setSendAmount(0)
           await tx.wait()
+          alert(
+            'Transaction was successfully confirmed! Please switch to Ethereum to claim your bridged tokens.',
+          )
+          switchToEthereum()
         } else {
           alert('An error has occured. Please try again!')
         }
@@ -207,27 +217,19 @@ const SimpleBridge = () => {
   const claimTokens = async () => {
     try {
       const currentClaimAmount = JSON.parse(localStorage.getItem('claimAmount'))
-      console.log({
-        currentClaimAmount,
-      })
 
       if (signer && currentClaimAmount !== 0) {
         const amount = ethers.utils.parseEther(currentClaimAmount)
         let tx
 
-        console.log({
-          amount,
-          currentClaimAmount,
-          targetChain,
-          maticUSDCSigner,
-        })
-
-        if (targetChain === 'matic') {
+        if (JSON.parse(localStorage.getItem('currentTargetChain')) === 'eth') {
           tx = await maticUSDCSigner.mint(address, amount)
           localStorage.setItem('claimAmount', JSON.stringify(0))
 
           await tx.wait()
-        } else if (targetChain === 'eth') {
+        } else if (
+          JSON.parse(localStorage.getItem('currentTargetChain')) === 'matic'
+        ) {
           tx = await ethUSDCSigner.mint(address, amount)
           localStorage.setItem('claimAmount', JSON.stringify(0))
 
@@ -330,11 +332,19 @@ const SimpleBridge = () => {
 
       <div className="personal-stats">
         {!connected ? (
-          <button type="button" onClick={connectWallet}>
+          <button
+            type="button"
+            className="connect-wallet btn btn-success bold"
+            onClick={connectWallet}
+          >
             Connect Wallet
           </button>
         ) : (
-          <button type="button" onClick={disconnectWallet}>
+          <button
+            type="button"
+            className="connect-wallet btn btn-danger bold"
+            onClick={disconnectWallet}
+          >
             Disconnect Wallet
           </button>
         )}
@@ -348,7 +358,7 @@ const SimpleBridge = () => {
         )}
         {connected && (
           <p>
-            <strong>Current Network:</strong>{' '}
+            <strong>Currently Connected Chain:</strong>{' '}
             {chainId === 4
               ? 'Ethereum'
               : chainId === 80001
@@ -361,125 +371,186 @@ const SimpleBridge = () => {
       <div className="bridge-stats">
         <div className="supply-stats">
           <p>
-            <strong>Supply on Ethereum:</strong> {ethSupply} USDC
+            <strong>Total Supply on Ethereum:</strong> {ethSupply} USDC
           </p>
           <p>
-            <strong>Supply on Polygon:</strong> {maticSupply} USDC
+            <strong>Total Supply on Polygon:</strong> {maticSupply} USDC
           </p>
           <p>
-            <strong>Total Supply:</strong> {totalSupply} USDC
+            <strong>Total Supply on All Chains:</strong> {totalSupply} USDC
           </p>
         </div>
-        <div className="add-to-metamask">
-          <button
-            type="button"
-            onClick={addEthUsdcToMM}
-            disabled={chainId !== 4}
-          >
-            Add to MetaMask
-          </button>
-          <button
-            type="button"
-            onClick={addMaticUsdcToMM}
-            disabled={chainId !== 80001}
-          >
-            Add to MetaMask
-          </button>
-        </div>
-        <div className="switch-chain">
-          <button
-            type="button"
-            onClick={switchToEthereum}
-            disabled={chainId === 4}
-          >
-            Switch to Ethereum
-          </button>
-          <button
-            type="button"
-            onClick={switchToPolygon}
-            disabled={chainId === 80001}
-          >
-            Switch to Polygon
-          </button>
+        <div className="user-actions">
+          <div className="add-to-metamask">
+            <button
+              type="button"
+              className="btn btn-primary bold add-eth-usdc-to-mm"
+              onClick={addEthUsdcToMM}
+              disabled={chainId !== 4}
+            >
+              Add USDC to MetaMask (Ethereum)
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary bold"
+              onClick={addMaticUsdcToMM}
+              disabled={chainId !== 80001}
+            >
+              Add USDC to MetaMask (Polygon)
+            </button>
+          </div>
+          <div className="switch-chain">
+            <button
+              type="button"
+              className="btn btn-primary bold switch-to-eth"
+              onClick={switchToEthereum}
+              disabled={chainId === 4}
+            >
+              Switch Chain to Ethereum
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary bold"
+              onClick={switchToPolygon}
+              disabled={chainId === 80001}
+            >
+              Switch Chain to Polygon
+            </button>
+          </div>
         </div>
       </div>
 
+      <hr />
+
       <div className="bridge">
         <div className="from">
-          <h2>From</h2>
-          <select
-            name="fromChain"
-            onChange={(e) => setTargetChain(e.target.value)}
-          >
-            <option value="" disabled selected>
-              Select Target Chain
-            </option>
-            <optgroup label="EVM Chains">
+          <h2 className="bridge-subtitle bold">Source Chain</h2>
+          <div className="form-group">
+            <select
+              name="fromChain"
+              className="form-control"
+              onChange={(e) => {
+                localStorage.setItem(
+                  'currentTargetChain',
+                  JSON.stringify(e.target.value),
+                )
+                setTargetChain(
+                  JSON.parse(localStorage.getItem('currentTargetChain')),
+                )
+                if (e.target.value === 'matic' && chainId !== 80001) {
+                  switchToPolygon()
+                } else if (e.target.value === 'eth' && chainId !== 4) {
+                  switchToEthereum()
+                }
+              }}
+            >
+              <option value="" disabled selected>
+                Select Source Chain
+              </option>
               <option value="eth">Ethereum</option>
               <option value="matic">Polygon</option>
-            </optgroup>
-            <optgroup label="Non-EVM Chains">
-              <option value="sol" disabled>
-                Solana
-              </option>
-            </optgroup>
-          </select>
-          <input
-            type="number"
-            name="amount1"
-            placeholder="Enter Amount"
-            value={sendAmount}
-            onChange={(e) => setSendAmount(e.target.value)}
-          />
-          <button type="button" onClick={sendTokens}>
+            </select>
+          </div>
+          <div className="form-group">
+            <input
+              type="number"
+              name="amount1"
+              placeholder="Enter Amount"
+              value={sendAmount}
+              onChange={(e) => setSendAmount(e.target.value)}
+              className="form-control"
+            />
+          </div>
+
+          <button
+            type="button"
+            className="btn btn-primary bold"
+            onClick={() => {
+              if (targetChain === '') {
+                alert('Please Select Source Chain First')
+              } else {
+                sendTokens()
+              }
+            }}
+          >
             Send
           </button>
         </div>
         <div className="target">
-          <h2>To</h2>
+          <h2 className="bridge-subtitle bold">Target Chain</h2>
           <p>
             <strong>Target Chain:</strong>{' '}
             {targetChain === 'matic'
               ? 'Ethereum'
               : targetChain === 'eth'
               ? 'Polygon'
-              : 'unknown'}
+              : 'Please Select Source Chain First'}
           </p>
-          <p>
+          <p className="claim-amount">
             <strong>Claim Amount:</strong>{' '}
             {JSON.parse(localStorage.getItem('claimAmount'))} USDC
           </p>
-          <button type="button" onClick={claimTokens}>
+          <p className="claim-chain">
+            <strong>Claim Chain:</strong>{' '}
+            {JSON.parse(localStorage.getItem('currentTargetChain')) === 'matic'
+              ? 'Ethereum'
+              : JSON.parse(localStorage.getItem('currentTargetChain')) === 'eth'
+              ? 'Polygon'
+              : 'Please Send Tokens on the Source Chain First'}
+          </p>
+          <button
+            type="button"
+            className="btn btn-primary bold"
+            disabled={JSON.parse(localStorage.getItem('claimAmount')) === 0}
+            onClick={() => {
+              claimTokens()
+            }}
+          >
             Claim
           </button>
         </div>
       </div>
 
+      <h2 className="bridge-subtitle bold">Faucet</h2>
+
       <div className="faucet">
-        <h2 className="faucet-title">Faucet</h2>
         <div className="eth-faucet">
-          <h2>Ethereum USDC</h2>
-          <input
-            type="number"
-            name="ethFaucetAmount"
-            value={ethFaucetAmount}
-            onChange={(e) => setEthFaucetAmount(e.target.value)}
-            placeholder="Enter Amount"
-          />
-          <button type="button" onClick={ethFaucetMint}>
+          <h3 className="bold faucet-subtitle">Ethereum USDC</h3>
+          <div className="form-group">
+            <input
+              type="number"
+              name="ethFaucetAmount"
+              value={ethFaucetAmount}
+              onChange={(e) => setEthFaucetAmount(e.target.value)}
+              placeholder="Enter Amount"
+              className="form-control"
+            />
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary bold"
+            onClick={ethFaucetMint}
+          >
             Mint
           </button>
         </div>
         <div className="matic-faucet">
-          <h2>Polygon USDC</h2>
-          <input
-            type="number"
-            name="maticFaucetAmount"
-            value={maticFaucetAmount}
-            onChange={(e) => setMaticFaucetAmount(e.target.value)}
-            placeholder="Enter Amount"
-          />
-          <button type="button" onClick={maticFaucetMint}>
+          <h3 className="bold faucet-subtitle">Polygon USDC</h3>
+          <div className="form-group">
+            <input
+              type="number"
+              name="maticFaucetAmount"
+              value={maticFaucetAmount}
+              onChange={(e) => setMaticFaucetAmount(e.target.value)}
+              placeholder="Enter Amount"
+              className="form-control"
+            />
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary bold"
+            onClick={maticFaucetMint}
+          >
             Mint
           </button>
         </div>

@@ -187,14 +187,9 @@ const App = () => {
       <TestContractsProvider>
         <ThemeProvider>
           <div className="App">
-            <Navbar signerAddress={currentSignerAddr} />
+            {/* <Navbar signerAddress={currentSignerAddr} /> */}
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/ethers-intro" element={<EthersIntro />} />
-              <Route path="/ethers-full" element={<EthersFull />} />
-              <Route path="/web3js-intro" element={<Web3jsIntro />} />
-              <Route path="/web3js-full" element={<Web3jsFull />} />
-              <Route path="/bridge" element={<SimpleBridge />} />
+              <Route path="/" element={<SimpleBridge />} />
             </Routes>
           </div>
         </ThemeProvider>

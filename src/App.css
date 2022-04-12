@@ -58,3 +58,96 @@ button {
   align-items: center;
   justify-content: space-around;
 }
+
+.bold {
+  font-weight: bold !important;
+}
+
+.bridge-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.bridge-title {
+  font-weight: bold;
+  margin-top: 50px;
+  font-size: 2.75em;
+}
+
+.connect-wallet {
+  margin: 35px 0 40px;
+}
+
+.personal-stats {
+  margin-bottom: 25px;
+}
+
+.user-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.add-to-metamask {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-top: 20px;
+}
+
+.add-eth-usdc-to-mm {
+  margin-right: 20px;
+}
+
+.switch-chain {
+  margin-top: 15px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.switch-to-eth {
+  margin-right: 20px;
+}
+
+.bridge-stats {
+  width: 80%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: row;
+}
+
+.bridge {
+  width: 80%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: row;
+  margin-bottom: 65px;
+}
+
+.bridge-subtitle {
+  margin-bottom: 25px;
+}
+
+input[type='number'],
+.claim-amount {
+  margin: 20px 0 20px;
+}
+
+.faucet {
+  width: 80%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: row;
+  margin-bottom: 70px;
+}
+
+.faucet-subtitle {
+  font-size: 1.65em;
+}
