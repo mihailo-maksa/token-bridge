@@ -151,3 +151,8 @@ input[type='number'],
 .faucet-subtitle {
   font-size: 1.65em;
 }
+
+.description {
+  margin-top: 10px;
+  font-size: 1.1em;
+}

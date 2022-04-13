@@ -7,8 +7,6 @@ const ETH_USDC = '0x091107Ff75172330AE048bC30e16906B0a019CE4'
 const MATIC_USDC = '0xCc187AeBC22b99B281036d587B7BB8113ddA8722'
 const tokenAbi = json[4].rinkeby.contracts.TestToken.abi
 
-// TODO: CSS & Preserve connection on refresh && From/to bug
-
 const SimpleBridge = () => {
   const [connected, setConnected] = useState(false)
   const [address, setAddress] = useState('')
@@ -328,7 +326,12 @@ const SimpleBridge = () => {
 
   return (
     <div className="bridge-container">
-      <h1 className="bridge-title">Simple Bridge</h1>
+      <h1 className="bridge-title">SimpleBridge</h1>
+
+      <p className="description">
+        A simple bridge to transfer testnet USDC tokens from the Ethereum
+        Rinkeby testnet to the Polygon Mumbai testnet
+      </p>
 
       <div className="personal-stats">
         {!connected ? (
@@ -488,7 +491,10 @@ const SimpleBridge = () => {
           </p>
           <p className="claim-amount">
             <strong>Claim Amount:</strong>{' '}
-            {JSON.parse(localStorage.getItem('claimAmount'))} USDC
+            {JSON.parse(localStorage.getItem('claimAmount'))
+              ? JSON.parse(localStorage.getItem('claimAmount'))
+              : 0}{' '}
+            USDC
           </p>
           <p className="claim-chain">
             <strong>Claim Chain:</strong>{' '}
